@@ -17,7 +17,7 @@
 <details>
 <summary> Скриншот(-ы) </summary>
 
-![01_vm](https://github.com/SergeyMuzychenko/Diplom/blob/main/img/1.png)
+![01_vm](https://github.com/SergeyMuzychenko/Diplom/blob/main/1.png)
 
 </details>
 
@@ -26,12 +26,12 @@
 
 #### 1.2 Группы безопасности соответствующих сервисов на входящий трафик только к нужным портам
 
-![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/img/2.png)
+![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/2.png)
 
 <details>
 <summary> Скриншот(-ы) </summary>
 
-![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/img/3.png)
+![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/3.png)
 
 </details>
 

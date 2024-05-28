@@ -26,12 +26,11 @@
 
 #### 1.2 Группы безопасности соответствующих сервисов на входящий трафик только к нужным портам
 
-![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/2.png)
 
 <details>
 <summary> Скриншот(-ы) </summary>
 
-![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/3.png)
+![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/2.png)
 
 </details>
 
@@ -40,21 +39,21 @@
 <details>
 <summary> Скриншот(-ы) </summary>
 
-![02_target-group](https://github.com/lantsevrot/Diplom/blob/main/img/tg1.png)
+![02_target-group](https://github.com/SergeyMuzychenko/Diplom/blob/main/3.png)
 
-![03_backend-group](https://github.com/lantsevrot/Diplom/blob/main/img/bg1.png)
+![03_backend-group](https://github.com/SergeyMuzychenko/Diplom/blob/main/4.png)
 
-![7](https://github.com/lantsevrot/Diplom/blob/main/img/alb1.png)
+![7](https://github.com/SergeyMuzychenko/Diplom/blob/main/5.png)
 
-![7](https://github.com/lantsevrot/Diplom/blob/main/img/alb11.png)
+![7](https://github.com/SergeyMuzychenko/Diplom/blob/main/6.png)
 
-![7](https://github.com/lantsevrot/Diplom/blob/main/img/w.png)
+![7](https://github.com/SergeyMuzychenko/Diplom/blob/main/7.png)
 
-![7](https://github.com/lantsevrot/Diplom/blob/main/img/bl.png)
+![7](https://github.com/SergeyMuzychenko/Diplom/blob/main/8.png)
 
 </details>
 
-### 2. Установка и настройка серверов на ВМ производилась с помощью плэйбуков  Ansible:
+### 2. Установка и настройка серверов на ВМ производилась с помощью плэйбуков  Ansible.
 
 #### 2.1 Установка и настройка производилась через установленный на bastion host Ansible по ssh 
 
@@ -164,5 +163,3 @@
 
 
 </details>
-
-## Инфраструктура готова к эксплуатации

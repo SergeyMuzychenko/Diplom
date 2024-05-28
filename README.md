@@ -3,7 +3,7 @@
 
 
 
-### 1\. Для выполнения задания был написан манифест terraform [main.tf](https://github.com/SergeyMuzychenko/Diplom/blob/main/terraform/main.tf), котрый созает следующие ресурсы:
+### 1\. Для выполнения задания был написан манифест terraform [main.tf](https://github.com/SergeyMuzychenko/Diplom/blob/main/main.tf), котрый созает следующие ресурсы:
 
 #### 1.1 Виртуальные машины.
 

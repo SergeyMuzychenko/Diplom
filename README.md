@@ -58,19 +58,17 @@
 ### 2. Установка и настройка серверов на ВМ производилась с помощью плэйбуков  Ansible.
 
 
-[файл host inventory](https://github.com/lantsevrot/Diplom/blob/main/ansible/hosts)**
+[файл host inventory](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/hosts)
 
-[elasticsearch_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/elastik_playbook.yaml)**
+[elasticsearch_playbook.yaml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/elastik_playbook.yaml)
 
-[kibana_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/kibana_playbook.yaml)**
+[kibana_playbook.yaml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/kibana_playbook.yaml)
    
-[nginx-playbook.yaml](https://github.com/RaffaelX/sys-gitlab-hw/blob/main/_diplom/ansible/nginx-playbook.yaml), [main.yml](https://github.com/RaffaelX/sys-gitlab-hw/blob/main/_diplom/ansible/nginx/tasks/main.yml)
+[filebeat_playbook.yaml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/filebeat_playbook.yaml)
 
-[filebeat_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/filebeat_playbook.yaml)
+[zabbix_agent_playbook.yaml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/zabbix_agent_playbook.yaml), [main.yml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/roles/zabbix-agent/tasks/main.yml)
 
-[zabbix_agent_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/zabbix_agent_playbook.yaml), [main.yml](https://github.com/lantsevrot/Diplom/blob/main/ansible/roles/zabbix-agent/tasks/main.yml)
-
-[zabbix_server_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/zabbix_server_playbook.yaml), [main.yml](https://github.com/lantsevrot/Diplom/blob/main/ansible/roles/zabbix-server/tasks/main.yml)
+[zabbix_server_playbook.yaml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/zabbix_server_playbook.yaml), [main.yml](https://github.com/SergeyMuzychenko/Diplom/blob/main/ansible/roles/zabbix-server/tasks/main.yml)
 
 
 ### 3. Резервное копирование 

@@ -1,101 +1,168 @@
 # Diplom
-Diplom
+Ключевая задача — разработать отказоустойчивую инфраструктуру для сайта, включающую мониторинг, сбор логов и резервное копирование основных данных. Инфраструктура должна размещаться в Yandex Cloud и отвечать минимальным стандартам безопасности.
 
-Дипломная работа по профессии «Системный администратор»
 
-Содержание
-Задача
-Инфраструктура
-Сайт
-Мониторинг
-Логи
-Сеть
-Резервное копирование
-Дополнительно
-Выполнение работы
-Критерии сдачи
-Как правильно задавать вопросы дипломному руководителю
-Задача
-Ключевая задача — разработать отказоустойчивую инфраструктуру для сайта, включающую мониторинг, сбор логов и резервное копирование основных данных. Инфраструктура должна размещаться в Yandex Cloud и отвечать минимальным стандартам безопасности: запрещается выкладывать токен от облака в git. Используйте инструкцию.
 
-Перед началом работы над дипломным заданием изучите Инструкция по экономии облачных ресурсов.
+### 1\. Для выполнения задания был написан манифест terraform [main.tf](https://github.com/SergeyMuzychenko/Diplom/blob/main/terraform/main.tf), котрый созает следующие ресурсы:
 
-Инфраструктура
-Для развёртки инфраструктуры используйте Terraform и Ansible.
+#### 1.1 Виртуальные машины.
 
-Не используйте для ansible inventory ip-адреса! Вместо этого используйте fqdn имена виртуальных машин в зоне ".ru-central1.internal". Пример: example.ru-central1.internal
+  - bastion-host
+  - elast
+  - kibana
+  - web-server-nginx-2
+  - web-server-nginx-1
+  - zabbix
 
-Важно: используйте по-возможности минимальные конфигурации ВМ:2 ядра 20% Intel ice lake, 2-4Гб памяти, 10hdd, прерываемая.
+<details>
+<summary> Скриншот(-ы) </summary>
 
-Так как прерываемая ВМ проработает не больше 24ч, перед сдачей работы на проверку дипломному руководителю сделайте ваши ВМ постоянно работающими.
+![01_vm](https://github.com/SergeyMuzychenko/Diplom/blob/main/img/1.png)
 
-Ознакомьтесь со всеми пунктами из этой секции, не беритесь сразу выполнять задание, не дочитав до конца. Пункты взаимосвязаны и могут влиять друг на друга.
+</details>
 
-Сайт
-Создайте две ВМ в разных зонах, установите на них сервер nginx, если его там нет. ОС и содержимое ВМ должно быть идентичным, это будут наши веб-сервера.
 
-Используйте набор статичных файлов для сайта. Можно переиспользовать сайт из домашнего задания.
+</details>
 
-Создайте Target Group, включите в неё две созданных ВМ.
+#### 1.2 Группы безопасности соответствующих сервисов на входящий трафик только к нужным портам
 
-Создайте Backend Group, настройте backends на target group, ранее созданную. Настройте healthcheck на корень (/) и порт 80, протокол HTTP.
+![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/img/2.png)
 
-Создайте HTTP router. Путь укажите — /, backend group — созданную ранее.
+<details>
+<summary> Скриншот(-ы) </summary>
 
-Создайте Application load balancer для распределения трафика на веб-сервера, созданные ранее. Укажите HTTP router, созданный ранее, задайте listener тип auto, порт 80.
+![09_20SG](https://github.com/SergeyMuzychenko/Diplom/blob/main/img/3.png)
 
-Протестируйте сайт curl -v <публичный IP балансера>:80
+</details>
 
-Мониторинг
-Создайте ВМ, разверните на ней Zabbix. На каждую ВМ установите Zabbix Agent, настройте агенты на отправление метрик в Zabbix.
+#### 1.3 Балансировщик нагрузки для распределения запросов на сайт и обеспечения безопасности
 
-Настройте дешборды с отображением метрик, минимальный набор — по принципу USE (Utilization, Saturation, Errors) для CPU, RAM, диски, сеть, http запросов к веб-серверам. Добавьте необходимые tresholds на соответствующие графики.
+<details>
+<summary> Скриншот(-ы) </summary>
 
-Логи
-Cоздайте ВМ, разверните на ней Elasticsearch. Установите filebeat в ВМ к веб-серверам, настройте на отправку access.log, error.log nginx в Elasticsearch.
+![02_target-group](https://github.com/lantsevrot/Diplom/blob/main/img/tg1.png)
 
-Создайте ВМ, разверните на ней Kibana, сконфигурируйте соединение с Elasticsearch.
+![03_backend-group](https://github.com/lantsevrot/Diplom/blob/main/img/bg1.png)
 
-Сеть
-Разверните один VPC. Сервера web, Elasticsearch поместите в приватные подсети. Сервера Zabbix, Kibana, application load balancer определите в публичную подсеть.
+![7](https://github.com/lantsevrot/Diplom/blob/main/img/alb1.png)
 
-Настройте Security Groups соответствующих сервисов на входящий трафик только к нужным портам.
+![7](https://github.com/lantsevrot/Diplom/blob/main/img/alb11.png)
 
-Настройте ВМ с публичным адресом, в которой будет открыт только один порт — ssh. Эта вм будет реализовывать концепцию bastion host . Синоним "bastion host" - "Jump host". Подключение ansible к серверам web и Elasticsearch через данный bastion host можно сделать с помощью ProxyCommand . Допускается установка и запуск ansible непосредственно на bastion host.(Этот вариант легче в настройке)
+![7](https://github.com/lantsevrot/Diplom/blob/main/img/w.png)
 
-Резервное копирование
-Создайте snapshot дисков всех ВМ. Ограничьте время жизни snaphot в неделю. Сами snaphot настройте на ежедневное копирование.
+![7](https://github.com/lantsevrot/Diplom/blob/main/img/bl.png)
 
-Дополнительно
-Не входит в минимальные требования.
+</details>
 
-Для Zabbix можно реализовать разделение компонент - frontend, server, database. Frontend отдельной ВМ поместите в публичную подсеть, назначте публичный IP. Server поместите в приватную подсеть, настройте security group на разрешение трафика между frontend и server. Для Database используйте Yandex Managed Service for PostgreSQL. Разверните кластер из двух нод с автоматическим failover.
-Вместо конкретных ВМ, которые входят в target group, можно создать Instance Group, для которой настройте следующие правила автоматического горизонтального масштабирования: минимальное количество ВМ на зону — 1, максимальный размер группы — 3.
-В Elasticsearch добавьте мониторинг логов самого себя, Kibana, Zabbix, через filebeat. Можно использовать logstash тоже.
-Воспользуйтесь Yandex Certificate Manager, выпустите сертификат для сайта, если есть доменное имя. Перенастройте работу балансера на HTTPS, при этом нацелен он будет на HTTP веб-серверов.
-Выполнение работы
-На этом этапе вы непосредственно выполняете работу. При этом вы можете консультироваться с руководителем по поводу вопросов, требующих уточнения.
+### 2. Установка и настройка серверов на ВМ производилась с помощью плэйбуков  Ansible:
 
-⚠️ В случае недоступности ресурсов Elastic для скачивания рекомендуется разворачивать сервисы с помощью docker контейнеров, основанных на официальных образах.
+#### 2.1 Установка и настройка производилась через установленный на bastion host Ansible по ssh 
 
-Важно: Ещё можно задавать вопросы по поводу того, как реализовать ту или иную функциональность. И руководитель определяет, правильно вы её реализовали или нет. Любые вопросы, которые не освещены в этом документе, стоит уточнять у руководителя. Если его требования и указания расходятся с указанными в этом документе, то приоритетны требования и указания руководителя.
+**[файл host inventory](https://github.com/lantsevrot/Diplom/blob/main/ansible/hosts)**
 
-Критерии сдачи
-Инфраструктура отвечает минимальным требованиям, описанным в Задаче.
-Предоставлен доступ ко всем ресурсам, у которых предполагается веб-страница (сайт, Kibana, Zabbix).
-Для ресурсов, к которым предоставить доступ проблематично, предоставлены скриншоты, команды, stdout, stderr, подтверждающие работу ресурса.
-Работа оформлена в отдельном репозитории в GitHub или в Google Docs, разрешён доступ по ссылке.
-Код размещён в репозитории в GitHub.
-Работа оформлена так, чтобы были понятны ваши решения и компромиссы.
-Если использованы дополнительные репозитории, доступ к ним открыт.
-Как правильно задавать вопросы дипломному руководителю
-Что поможет решить большинство частых проблем:
+<details>
+<summary> Скриншот(-ы) </summary>
 
-Попробовать найти ответ сначала самостоятельно в интернете или в материалах курса и только после этого спрашивать у дипломного руководителя. Навык поиска ответов пригодится вам в профессиональной деятельности.
-Если вопросов больше одного, присылайте их в виде нумерованного списка. Так дипломному руководителю будет проще отвечать на каждый из них.
-При необходимости прикрепите к вопросу скриншоты и стрелочкой покажите, где не получается. Программу для этого можно скачать здесь.
-Что может стать источником проблем:
+![00_Bastion-host](https://github.com/lantsevrot/Diplom/blob/main/img/hosts.png)
 
-Вопросы вида «Ничего не работает. Не запускается. Всё сломалось». Дипломный руководитель не сможет ответить на такой вопрос без дополнительных уточнений. Цените своё время и время других.
-Откладывание выполнения дипломной работы на последний момент.
-Ожидание моментального ответа на свой вопрос. Дипломные руководители — работающие инженеры, которые занимаются, кроме преподавания, своими проектами. Их время ограничено, поэтому постарайтесь задавать правильные вопросы, чтобы получать быстрые ответы :)
+</details>
+
+
+####  2.2 Установка Elasticsearch и Kibana 
+
+**[elasticsearch_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/elastik_playbook.yaml)**
+
+* скачивает elasticsearch deb
+* устанавливает elasticsearch
+* корректирует конфигурационный файл
+
+**[kibana_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/kibana_playbook.yaml)**
+
+* устанавливает kibana
+* корректирует конфигурационный файл
+    Админка **[Kinbana](http://178.154.220.202:5601)**
+   
+<details>
+<summary> Скриншот(-ы) </summary>
+
+![28_ install](https://github.com/lantsevrot/Diplom/blob/main/img/kibana.png)
+![28_ install](https://github.com/lantsevrot/Diplom/blob/main/img/elastic.png)
+![28_ install](https://github.com/lantsevrot/Diplom/blob/main/img/filebeat111.png)
+![28_ install](https://github.com/lantsevrot/Diplom/blob/main/img/filebeat222.png)
+</details>
+
+####  2.3 Установка NGINX на web сервера [nginx-playbook.yaml](https://github.com/RaffaelX/sys-gitlab-hw/blob/main/_diplom/ansible/nginx-playbook.yaml), [main.yml](https://github.com/RaffaelX/sys-gitlab-hw/blob/main/_diplom/ansible/nginx/tasks/main.yml)
+
+* устанавливает nginx на ВМ linux-nginx-1, linux-nginx-2
+* устанавливает начальную страницу сайта по шаблону j2, доступ через балансировщик **[ссылка](http://158.160.62.31:80)**
+
+<details>
+<summary> Скриншот(-ы) </summary>
+
+![21_ install_nginx](https://github.com/lantsevrot/Diplom/blob/main/img/nginx_playbook22.png)
+
+![22_ install_nginx](https://github.com/lantsevrot/Diplom/blob/main/img/nginx_playbook3.png)
+
+![23_ install_nginx](https://github.com/lantsevrot/Diplom/blob/main/img/nginx_playbook4.png)
+
+</details>
+
+#### 2.4 Установка filebeat на web сервера для сбора логов NGINX [filebeat_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/filebeat_playbook.yaml)
+
+* скачивает filebeat deb
+* устанавливает filebeat на сервера web-server-nginx-2 and web-server-nginx-1
+
+<details>
+<summary> Скриншот(-ы) </summary>
+
+![28_20](https://github.com/lantsevrot/Diplom/blob/main/img/filebeat.png)
+
+</details>
+
+#### 2.5 Установка zabbix-agent на ВМ [zabbix_agent_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/zabbix_agent_playbook.yaml), [main.yml](https://github.com/lantsevrot/Diplom/blob/main/ansible/roles/zabbix-agent/tasks/main.yml)
+  - добавляет репозиторий zabbix
+  - устанавливает zabbix agent на все хосты
+  - вносит корректировку в файл конфигурации  
+
+
+<details>
+<summary> Скриншот(-ы) </summary>
+
+![25_install_zabbix_agent](https://github.com/lantsevrot/Diplom/blob/main/img/zabbix-agent.png)
+
+</details>
+
+#### 2.6 Установка zabbix-server [zabbix_server_playbook.yaml](https://github.com/lantsevrot/Diplom/blob/main/ansible/zabbix_server_playbook.yaml), [main.yml](https://github.com/lantsevrot/Diplom/blob/main/ansible/roles/zabbix-server/tasks/main.yml)
+  
+  - добавляет репозиторий zabbix
+  - устанавливает на хост zabbix -  zabbix server, zabbix agent, mysql, nginx
+  - создает базу данных, пользователя, задает пароль
+**[Админка zabbix-server](http://178.154.223.6:8080)**
+
+<details>
+<summary> Скриншот(-ы) </summary>
+
+![24_install_zabbix_server](https://github.com/lantsevrot/Diplom/blob/main/img/Ansible_Playbook_Zabbix-server_1.png)
+
+![26_ installzabbix_server](https://github.com/lantsevrot/Diplom/blob/main/img/Ansible_Playbook_Zabbix-server_2.png)
+
+![27_ installzabbix_server](https://github.com/lantsevrot/Diplom/blob/main/img/zabbix.png)
+
+### Настраиваем дешборды с отображением метрик, минимальный набор — по принципу USE (Utilization, Saturation, Errors) для CPU, RAM, диски, сеть, http запросов к веб-серверам.
+
+![27_ installzabbix_server](https://github.com/lantsevrot/Diplom/blob/main/img/zabbix2.png)
+
+</details>
+
+### 3. Резервное копирование 
+#### 3.1 Резервное копирование было настроено через terraform, подробрнее в файле main.tf
+
+<details>
+<summary> Скриншот(-ы) </summary>
+
+![99_Snapshot_1](https://github.com/lantsevrot/Diplom/blob/main/img/snapshot.png)
+
+
+</details>
+
+## Инфраструктура готова к эксплуатации
